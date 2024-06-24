@@ -17,6 +17,7 @@ struct Cliente {
     int telefono;
     string cedula;
     string Departamento;
+    string plan;
     
 };
 struct Factura {
@@ -82,6 +83,29 @@ Factura crear_factura(int numero_factura, const string& fecha, double total, con
     factura.cliente = cliente;
     return factura;
 }
+void buscar_cliente_por_plan() {
+    string plan;
+    cout << "Ingrese el plan de Internet a buscar: ";
+    cin.ignore();
+    getline(cin, plan);
+
+    bool encontrado = false;
+    cout << "Clientes con el plan '" << plan << "':" << endl;
+    for (const auto& cliente : clientes) {
+        if (cliente.plan == plan) {
+            cout << "Nombre: " << cliente.nombre << " " << cliente.apellido << endl;
+            cout << "Departamento: " << cliente.Departamento << endl;
+            cout << "Teléfono: " << cliente.telefono << endl;
+            cout << "Cédula: " << cliente.cedula << endl;
+            cout << "----------------------" << endl;
+            encontrado = true;
+        }
+    }
+    if (!encontrado) {
+        cout << "No se encontraron clientes con el plan especificado." << endl;
+    }
+}
+
 void MenuOpciones(){
     cout<<"                   -----Menu Principal-----"<<endl;
     cout << "\n1.Menu de Empresa"  << "\n2.Menu para Clientes"<< "\n3.Salir del Programa"<<endl;
