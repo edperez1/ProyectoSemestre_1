@@ -3,6 +3,7 @@
 #include <vector>
 #include <conio.h>
 #include <limits>
+#include <algorithm>
 
 /*Este es nuestro Proyecto Final de el Primer semestre de la clase de Logica y Algoritmos */
 
@@ -32,9 +33,62 @@ struct Factura
 };
 // Funciones principales.
 vector<Cliente> clientes;
-void Eliminarcliente()
+void EliminarCliente()
 {
-    // no esta
+    int opcion;
+    string valorEliminar;
+    cout << "Seleccione el criterio para eliminar el cliente:\n";
+    cout << "1. Nombre\n";
+    cout << "2. Cedula\n";
+    cout << "3. Numero de telefono\n";
+    cout << "Opción: ";
+    cin >> opcion;
+    cin.ignore(); // Limpia el buffer después de leer un número
+
+    cout << "Ingrese el valor correspondiente: ";
+    getline(cin, valorEliminar);
+
+    auto it = clientes.end(); // Inicializa el iterador al final como valor por defecto
+
+switch(opcion) {
+    case 1: // Nombre o Apellido
+        it = remove_if(clientes.begin(), clientes.end(), [&](const Cliente& cliente) {
+            return cliente.nombre == valorEliminar || cliente.apellido == valorEliminar;
+        });
+        clientes.erase(it, clientes.end()); // Completa la eliminación
+        break;
+    case 2: // Cédula
+        it = remove_if(clientes.begin(), clientes.end(), [&](const Cliente& cliente) {
+            return cliente.cedula == valorEliminar;
+        });
+        clientes.erase(it, clientes.end()); // Completa la eliminación
+        break;
+case 3: // Número de teléfono
+    int valorEliminarInt;
+    try {
+        valorEliminarInt = std::stoi(valorEliminar);
+    } catch (const std::invalid_argument& e) {
+        cout << "El valor a eliminar no es un número válido.\n";
+        break;
+    } catch (const std::out_of_range& e) {
+        cout << "El valor a eliminar está fuera de rango.\n";
+        break;
+    }
+
+    it = remove_if(clientes.begin(), clientes.end(), [&](const Cliente& cliente) {
+        return cliente.telefono == valorEliminarInt;
+    });
+    clientes.erase(it, clientes.end()); // Completa la eliminación
+    break;
+}
+
+// Verifica si se encontraron elementos para eliminar
+if (it != clientes.end()) {
+    clientes.erase(it, clientes.end());
+    cout << "Cliente(s) eliminado(s) exitosamente.\n";
+} else {
+    cout << "Cliente no encontrado.\n";
+}
 }
 
 void agregar_cliente()
@@ -249,10 +303,11 @@ void menu_principal()
     {
         cout << "\nMenu Principal\n";
         cout << "1. Agregar Cliente\n";
-        cout << "2. Buscar Cliente\n";
-        cout << "3. Mostrar Clientes\n";
-        cout << "4. Crear Factura\n";
-        cout << "5. Salir\n";
+        cout << "2. Eliminar Cliente\n";
+        cout << "3. Buscar Cliente\n";
+        cout << "4. Mostrar Clientes\n";
+        cout << "5. Crear Factura\n";
+        cout << "6. Salir\n";
         cout << "Seleccione una opcion: ";
         cin >> opcion;
 
@@ -266,18 +321,22 @@ void menu_principal()
             cout << "Agregar Cliente seleccionado.\n";
             break;
         case 2:
+            EliminarCliente();
+            cout << "Eliminar Cliente seleccionado.\n";
+            break;
+        case 3:
             buscar_cliente();
             cout << "Buscar Cliente seleccionado.\n";
             break;
-        case 3:
+        case 4:
             mostrar_clientes();
             cout << "Mostrar Clientes seleccionado.\n";
             break;
-        case 4:
+        case 5:
             // NO HECHO
             cout << "Crear Factura seleccionado.\n";
             break;
-        case 5:
+        case 6:
             cout << "Saliendo...\n";
             break;
         default:
