@@ -295,18 +295,6 @@ void mostrar_menu()
     cout << "--------------------\n";
     cout << "Ingrese una opcion: ";
 }
-<<<<<<< HEAD
- 
-void menu_principal() {
-    char opcion;
-    do {
-        mostrar_menu();
-        cin >> opcion;
-
-        // esta onda de cin ignore esta en mucha parte del codigo, sirve para limpiar el buffer
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-=======
->>>>>>> main
 
 void menu_principal()
 {
