@@ -3,7 +3,6 @@
 #include <vector>
 #include <conio.h>
 #include <limits>
-
 /*Este es nuestro Proyecto Final de el Primer semestre de la clase de Logica y Algoritmos */
 
 using namespace std;
@@ -32,13 +31,10 @@ struct Factura
 };
 // Funciones principales.
 vector<Cliente> clientes;
-void Eliminarcliente()
-{
-    // no esta
+void Eliminarcliente(){
 }
 
-void agregar_cliente()
-{
+void agregar_cliente() {
     Cliente nuevo_cliente;
     cout << "Ingrese el nombre del cliente: ";
     getline(cin, nuevo_cliente.nombre);
@@ -241,47 +237,35 @@ void mostrar_menu()
     cout << "--------------------\n";
     cout << "Ingrese una opcion: ";
 }
-
-void menu_principal()
-{
-    int opcion = 0;
-    do
-    {
-        cout << "\nMenu Principal\n";
-        cout << "1. Agregar Cliente\n";
-        cout << "2. Buscar Cliente\n";
-        cout << "3. Mostrar Clientes\n";
-        cout << "4. Crear Factura\n";
-        cout << "5. Salir\n";
-        cout << "Seleccione una opcion: ";
+ 
+void menu_principal() {
+    char opcion;
+    do {
+        mostrar_menu();
         cin >> opcion;
 
         // esta onda de cin ignore esta en mucha parte del codigo, sirve para limpiar el buffer
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-        switch (opcion)
-        {
-        case 1:
-            agregar_cliente();
-            cout << "Agregar Cliente seleccionado.\n";
-            break;
-        case 2:
-            buscar_cliente();
-            cout << "Buscar Cliente seleccionado.\n";
-            break;
-        case 3:
-            mostrar_clientes();
-            cout << "Mostrar Clientes seleccionado.\n";
-            break;
-        case 4:
-            // NO HECHO
-            cout << "Crear Factura seleccionado.\n";
-            break;
-        case 5:
-            cout << "Saliendo...\n";
-            break;
-        default:
-            cout << "Opción no válida. Por favor, intente de nuevo.\n";
+        switch (opcion) {
+            case '1':
+                agregar_cliente();
+                break;
+            case '2':
+                // Función para mostrar clientes
+                break;
+            case '3':
+                // Función para crear factura
+                break;
+            case '4':
+            // Funcion para eliminar clientes
+                cout << "Cliente eliminado" << endl;
+                break;
+                case '5':
+                cout << "Saliendo del programa..." << endl;
+                break;
+            default:
+                cout << "Opción inválida. Inténtelo de nuevo." << endl;
         }
         //falta un break mas acerca de eliminar clientes
     } while (opcion != 5);
