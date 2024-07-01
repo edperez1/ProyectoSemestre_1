@@ -8,7 +8,7 @@
 /*Este es nuestro Proyecto Final de el Primer semestre de la clase de Logica y Algoritmos */
 
 
-//chocacordarse
+// acordarse
 // agregar filtro
 // agregar "mostrar todos los clientes"
 // agregar crear factura
