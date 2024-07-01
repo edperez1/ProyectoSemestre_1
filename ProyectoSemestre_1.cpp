@@ -7,6 +7,17 @@
 
 /*Este es nuestro Proyecto Final de el Primer semestre de la clase de Logica y Algoritmos */
 
+
+//chocacordarse
+// agregar filtro
+// agregar "mostrar todos los clientes"
+// agregar crear factura
+// agregar morosos, no morosos
+// agregar validaciones
+// agregar que plan desea comprar en factura
+
+
+
 using namespace std;
 // Definir struct
 struct PaqueteInternet
@@ -41,7 +52,7 @@ void EliminarCliente()
     cout << "1. Nombre\n";
     cout << "2. Cedula\n";
     cout << "3. Numero de telefono\n";
-    cout << "Opción: ";
+    cout << "Opcion: ";
     cin >> opcion;
     cin.ignore(); // Limpia el buffer después de leer un número
 
@@ -103,7 +114,7 @@ void agregar_cliente()
     cout << "Ingrese la direccion del cliente: ";
     getline(cin, nuevo_cliente.direccion);
 
-    cout << "Ingrese el telefono del cliente : ";
+    cout << "Ingrese el telefono del cliente: ";
     while (true)
     {
         if (cin >> nuevo_cliente.telefono)
@@ -114,7 +125,7 @@ void agregar_cliente()
             }
             else
             {
-                cout << "Ingrese un Numero Nacional ";
+                cout << "Ingrese un Numero Nacional. ";
             }
         }
         else
@@ -124,7 +135,7 @@ void agregar_cliente()
         }
     }
 
-    cout << "Introduzca la cedula de el cliente : ";
+    cout << "Introduzca la cedula de el cliente: ";
     while (true)
     {
         cin >> nuevo_cliente.cedula;
@@ -179,7 +190,7 @@ void buscar_cliente()
 
         while (!(cin >> opcion) || opcion < 1 || opcion > 4)
         {
-            cout << "Opcion inválida. Por favor, ingrese un número entre 1 y 4: ";
+            cout << "Opcion invalida. Por favor, ingrese un numero entre 1 y 4: ";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
         cin.ignore();
@@ -246,9 +257,12 @@ void buscar_cliente()
             break;
         }
 
-        cout << "Desea buscar otro cliente o volver al menu principal? (s para buscar de nuevo, cualquier otra tecla para volver): ";
+        cout << "Desea buscar otro cliente o volver al menu principal? (s para buscar de nuevo/n para volver): ";
         cin >> seguir;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        system("pause");
+        system("cls");
+
     } while (seguir == 's' || seguir == 'B');
 }
 
@@ -261,10 +275,15 @@ Factura crear_factura(int numero_factura, const string &fecha, double total, con
     factura.cliente = cliente;
     return factura;
 }
+
+//menu principal (1,2,3)
 void MenuOpciones()
 {
     cout << "                   -----Menu Principal-----" << endl;
-    cout << "\n1.Menu de Empresa" << "\n2.Menu para Clientes" << "\n3.Salir del Programa" << endl;
+    cout << "\n1. Menu de Empresa" << "\n2. Menu para Clientes" << "\n3. Salir del Programa" << endl;
+    cout << "Seleccione una opcion: ";
+
+
 }
 
 void mostrarPrecios()
@@ -284,24 +303,22 @@ void mostrarInformacionPaquete(const PaqueteInternet &paquete)
 
 void mostrar_menu()
 {
-    cout << "\n-- Menu de Empresa--" << endl;
-    cout << "1. Agregar Cliente" << endl;
-    cout << "2. Mostrar Clientes" << endl;
-    cout << "3. Eliminar clientes" << endl;
-    cout << "4. Crear Factura" << endl;
-    cout << "5. Buscar clientes" << endl;
-    cout << "6. Salir" << endl;
-
-    cout << "--------------------\n";
-    cout << "Ingrese una opcion: ";
+     cout << "\nMenu de empresa\n";
+        cout << "1. Agregar Cliente\n";
+        cout << "2. Eliminar Cliente\n";
+        cout << "3. Buscar Cliente\n";
+        cout << "4. Mostrar Clientes\n";
+        cout << "5. Crear Factura\n";
+        cout << "6. Salir\n";
+        cout << "Seleccione una opcion: ";
 }
 
-void menu_principal()
+void menu_empresa()
 {
     int opcion = 0;
     do
     {
-        cout << "\nMenu Principal\n";
+        cout << "\nMenu de empresa\n";
         cout << "1. Agregar Cliente\n";
         cout << "2. Eliminar Cliente\n";
         cout << "3. Buscar Cliente\n";
@@ -318,19 +335,26 @@ void menu_principal()
         {
         case 1:
             agregar_cliente();
-            cout << "Agregar Cliente seleccionado.\n";
+            system("pause");
+            system("cls");
+
             break;
         case 2:
             EliminarCliente();
             cout << "Eliminar Cliente seleccionado.\n";
+            system("pause");
+            system("cls");
             break;
         case 3:
             buscar_cliente();
             cout << "Buscar Cliente seleccionado.\n";
+            system("pause");
+            system("cls");
             break;
         case 4:
             mostrar_clientes();
-            cout << "Mostrar Clientes seleccionado.\n";
+            system("pause");
+            system("cls");
             break;
         case 5:
             // NO HECHO
@@ -338,12 +362,13 @@ void menu_principal()
             break;
         case 6:
             cout << "Saliendo...\n";
+            
             break;
         default:
-            cout << "Opción no válida. Por favor, intente de nuevo.\n";
+            cout << "Opcion no valida. Por favor, intente de nuevo.\n";
         }
         //falta un break mas acerca de eliminar clientes
-    } while (opcion != 5);
+    } while (opcion != 6);
 }
 
 void menuClientes()
@@ -376,12 +401,12 @@ void menuClientes()
         }
         else if (opcion == 5)
         {
-            cout << "volviendo al Menu...";
+            cout << "Volviendo al Menu...";
             break;
         }
         else
         {
-            cout << "Opción no válida.\n";
+            cout << "Opcion no valida.\n";
         }
     } while (opcion != 5);
 }
@@ -393,12 +418,13 @@ void MostrarMenuOpcion()
     {
         MenuOpciones();
         cin >> opcion;
+        system("cls");
         cin.ignore();
 
         switch (opcion)
         {
         case '1':
-            menu_principal();
+            menu_empresa();
             system("cls");
             break;
         case '2':
