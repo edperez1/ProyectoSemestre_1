@@ -26,14 +26,13 @@ struct PaqueteInternet
     string descripcion;
     double precio;
 };
-struct Cliente
-{
+struct Cliente {
     string nombre;
     string apellido;
     string direccion;
     int telefono;
     string cedula;
-    string Departamento;
+    int Departamento; 
 };
 struct Factura
 {
@@ -109,8 +108,15 @@ void agregar_cliente()
     getline(cin, nuevo_cliente.nombre);
     cout << "Ingrese el apellido del cliente: ";
     getline(cin, nuevo_cliente.apellido);
-    cout << "Ingrese el Departamento del cliente: ";
-    getline(cin, nuevo_cliente.Departamento);
+    cout << "Seleccione el departamento:\n";
+    string departamentos[] = {"Atlantico Norte", "Atlantico Sur", "Boaco", "Carazo", "Chinandega", "Chontales", "Esteli", "Granada", "Jinotega", "Leon", "Madriz", "Managua", "Masaya", "Matagalpa", "Nueva Segovia", "Rio San Juan", "Rivas"};
+    for (int i = 0; i < 17; ++i) {
+        cout << i+1 << ". " << departamentos[i] << "\n";
+    }
+    cout << "Ingrese el numero del departamento: ";
+    cin >> nuevo_cliente.Departamento;
+    cin.ignore();
+
     cout << "Ingrese la direccion del cliente: ";
     getline(cin, nuevo_cliente.direccion);
 
@@ -152,7 +158,15 @@ void agregar_cliente()
     clientes.push_back(nuevo_cliente);
     cout << "Cliente agregado con exito." << endl;
 }
-
+//lista de departamentos para que se muestren
+string obtenerNombreDepartamento(int numeroDepartamento) {
+    string departamentos[] = {"Atlantico Norte", "Atlantico Sur", "Boaco", "Carazo", "Chinandega", "Chontales", "Esteli", "Granada", "Jinotega", "Leon", "Madriz", "Managua", "Masaya", "Matagalpa", "Nueva Segovia", "Rio San Juan", "Rivas"};
+    if (numeroDepartamento > 0 && numeroDepartamento <= 17) {
+        return departamentos[numeroDepartamento - 1];
+    } else {
+        return "Departamento desconocido";
+    }
+}
 void mostrar_clientes()
 {
     if (clientes.empty())
@@ -164,7 +178,7 @@ void mostrar_clientes()
     cout << "------------------\n";
     for (const auto &cliente : clientes)
     {
-        cout << "Nombre: " << cliente.nombre << "\nApellido: " << cliente.apellido << "\nDepartamento: " << cliente.Departamento << "\nDireccion: " << cliente.direccion << "\nTelefono: " << cliente.telefono << "\nCedula: " << cliente.cedula << "\n";
+        cout << "Nombre: " << cliente.nombre << "\nApellido: " << cliente.apellido << "\nDepartamento: " <<  obtenerNombreDepartamento(cliente.Departamento) << "\nDireccion: " << cliente.direccion << "\nTelefono: " << cliente.telefono << "\nCedula: " << cliente.cedula << "\n";
         cout << "------------------\n";
     }
 }
@@ -186,11 +200,12 @@ void buscar_cliente()
         cout << "2. Por Cedula\n";
         cout << "3. Por Nombre\n";
         cout << "4. Por Numero\n";
+        cout << "5. Por Departamento\n"; 
         cout << "Ingrese una opcion: ";
 
-        while (!(cin >> opcion) || opcion < 1 || opcion > 4)
+        while (!(cin >> opcion) || opcion < 1 || opcion > 5)
         {
-            cout << "Opcion invalida. Por favor, ingrese un numero entre 1 y 4: ";
+            cout << "Opcion invalida. Por favor, ingrese un numero entre 1 y 5: ";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
         cin.ignore();
@@ -210,7 +225,7 @@ void buscar_cliente()
                 if (cliente.cedula == busqueda)
                 {
                     cout << "Cliente encontrado:\n";
-                    cout << "Nombre: " << cliente.nombre << "\nApellido: " << cliente.apellido << "\nDepartamento: " << cliente.Departamento << "\nDireccion: " << cliente.direccion << "\nTelefono: " << cliente.telefono << "\nCedula: " << cliente.cedula << "\n\n";
+                    cout << "Nombre: " << cliente.nombre << "\nApellido: " << cliente.apellido << "\nDepartamento: " << obtenerNombreDepartamento(cliente.Departamento) << "\nDireccion: " << cliente.direccion << "\nTelefono: " << cliente.telefono << "\nCedula: " << cliente.cedula << "\n\n";
                     encontrado = true;
                     break;
                 }
@@ -252,9 +267,28 @@ void buscar_cliente()
                     break;
                 }
             }
-            if (!encontrado)
-                cout << "Cliente no encontrado.\n";
             break;
+        case 5: 
+                int numDepartamento;
+                cout << "Ingrese el numero del departamento: ";
+                while (!(cin >> numDepartamento))
+                {
+                    cout << "Por favor, ingrese un numero valido para el departamento: ";
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
+                for (const auto &cliente : clientes)
+                {
+                    if (cliente.Departamento == numDepartamento)
+                    {
+                        cout << "Cliente encontrado:\n";
+                        cout << "Nombre: " << cliente.nombre << "\nApellido: " << cliente.apellido << "\nDepartamento: " << obtenerNombreDepartamento(cliente.Departamento) << "\nDireccion: " << cliente.direccion << "\nTelefono: " << cliente.telefono << "\nCedula: " << cliente.cedula << "\n\n";
+                        encontrado = true;
+                        break;
+                    }
+                }
+                if (!encontrado)
+                    cout << "Cliente no encontrado.\n";
+                break;
         }
 
         cout << "Desea buscar otro cliente o volver al menu principal? (s para buscar de nuevo/n para volver): ";
@@ -341,13 +375,11 @@ void menu_empresa()
             break;
         case 2:
             EliminarCliente();
-            cout << "Eliminar Cliente seleccionado.\n";
             system("pause");
             system("cls");
             break;
         case 3:
             buscar_cliente();
-            cout << "Buscar Cliente seleccionado.\n";
             system("pause");
             system("cls");
             break;
@@ -367,7 +399,7 @@ void menu_empresa()
         default:
             cout << "Opcion no valida. Por favor, intente de nuevo.\n";
         }
-        //falta un break mas acerca de eliminar clientes
+        //falta un break mas acerca de eliminar clientes q?
     } while (opcion != 6);
 }
 
