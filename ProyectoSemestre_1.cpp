@@ -25,13 +25,16 @@ struct PaqueteInternet
 };
 struct Cliente
 {
+    int id;
     string nombre;
     string apellido;
     string direccion;
     int telefono;
     string cedula;
     int Departamento;
+    int planInternet;
 };
+int ultimoId;
 struct Factura
 {
     string periodo;
@@ -97,7 +100,7 @@ void EliminarCliente()
         break;
     }
 
-    // Verifica si se encontraron elementos para eliminar
+    // Verificaa si se encontraron elementos para eliminar
     if (it != clientes.end())
     {
         clientes.erase(it, clientes.end());
@@ -112,6 +115,7 @@ void EliminarCliente()
 void agregar_cliente()
 {
     Cliente nuevo_cliente;
+    nuevo_cliente.id = ultimoId++;
     cout << "Ingrese el nombre del cliente: ";
     getline(cin, nuevo_cliente.nombre);
     cout << "Ingrese el apellido del cliente: ";
@@ -164,10 +168,30 @@ void agregar_cliente()
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
     }
-    cout << "Que plan desea el ciente? \n";
+    int opcion_paquete;
+    do
+    {
+        cout << "Opciones de paquetes de Internet:\n";
+        cout << "1. 5 mbps\n";
+        cout << "2. 5 mbps + CATV\n";
+        cout << "3. 10 mbps + CATV\n";
+        cout << "4. 20 mbps + CATV\n";
+        cout << "Seleccione una opcion para el paquete de Internet: ";
+        cin >> opcion_paquete;
 
+        if (opcion_paquete >= 1 && opcion_paquete <= 4)
+        {
+            nuevo_cliente.planInternet = opcion_paquete;
+            cout << "Paquete seleccionado: " << opcion_paquete << "\n";
+            break; // Salir del bucle si la opción es válida
+        }
+        else
+        {
+            cout << "Opcion no valida. Por favor, intente de nuevo.\n";
+        }
+    } while (true);
     clientes.push_back(nuevo_cliente);
-    cout << "Cliente agregado con exito." << endl;
+    cout << "Cliente agregado con exito. ID: " << nuevo_cliente.id << endl;
 }
 // lista de departamentos para que se muestren
 string obtenerNombreDepartamento(int numeroDepartamento)
@@ -194,7 +218,25 @@ void mostrar_clientes()
     cout << "------------------\n";
     for (const auto &cliente : clientes)
     {
-        cout << "Nombre: " << cliente.nombre << "\nApellido: " << cliente.apellido << "\nDepartamento: " << obtenerNombreDepartamento(cliente.Departamento) << "\nDireccion: " << cliente.direccion << "\nTelefono: " << cliente.telefono << "\nCedula: " << cliente.cedula << "\n";
+        cout << "Nombre: " << cliente.nombre << "\nApellido: " << cliente.apellido << "\nDepartamento: " << obtenerNombreDepartamento(cliente.Departamento) << "\nDireccion: " << cliente.direccion << "\nTelefono: " << cliente.telefono << "\nCedula: " << cliente.cedula << "\nID: " << cliente.id << "\nPlan de Internet: ";
+        switch (cliente.planInternet)
+        {
+        case 1:
+            cout << "5 mbps";
+            break;
+        case 2:
+            cout << "5 mbps + CATV";
+            break;
+        case 3:
+            cout << "10 mbps + CATV";
+            break;
+        case 4:
+            cout << "20 mbps + CATV";
+            break;
+        default:
+            cout << "Plan no definido";
+        }
+        cout << "\n";
         cout << "------------------\n";
     }
 }
@@ -340,30 +382,45 @@ void mostrarInformacionPaquete(const PaqueteInternet &paquete)
     cout << "Descripcion: " << paquete.descripcion << "\n";
     cout << "Precio: $" << paquete.precio << "\n";
 }
+vector<Factura> facturas;
 void crearFactura()
 {
-    Factura factura;
+    int idCliente;
+    bool clienteEncontrado = false;
+    Cliente clienteFactura;
 
-    // Solicitar datos de la factura
+    // Solicitar ID del cliente
+    cout << "Ingrese el ID del cliente para la factura: ";
+    cin >> idCliente;
+
+    // Buscar el cliente por ID
+    for (const auto &cliente : clientes)
+    {
+        if (cliente.id == idCliente)
+        {
+            clienteFactura = cliente; // Asignar el cliente encontrado a una variable temporal
+            clienteEncontrado = true;
+            break;
+        }
+    }
+
+    if (!clienteEncontrado)
+    {
+        cout << "Cliente no encontrado." << endl;
+        return; // Salir de la función si no se encuentra el cliente
+    }
+
+    // Crear una nueva factura y asignar el cliente encontrado
+    Factura factura;
+    factura.cliente = clienteFactura;
+
+    // Solicitar el resto de datos de la factura
     cout << "Ingrese el periodo de la factura: ";
     cin >> factura.periodo;
     cout << "Ingrese la fecha de emision (DD/MM/AAAA): ";
     cin >> factura.fechaEmision;
     cout << "Ingrese la fecha de vencimiento (DD/MM/AAAA): ";
     cin >> factura.fechaVencimiento;
-
-    // Solicitar datos del cliente
-    cout << "Ingrese el nombre del cliente: ";
-    cin >> factura.cliente.nombre;
-    cout << "Ingrese el apellido del cliente: ";
-    cin >> factura.cliente.apellido;
-    cout << "Ingrese la direccion del cliente: ";
-    cin.ignore();                            // Ignora el '\n' que queda en el buffer
-    getline(cin, factura.cliente.direccion); // Permite espacios en la dirección
-    cout << "Ingrese el telefono del cliente: ";
-    cin >> factura.cliente.telefono;
-
-    // Solicitar detalles de la factura
     cout << "Ingrese el saldo pendiente: ";
     cin >> factura.saldoPendiente;
     cout << "Ingrese el total de la factura del mes: ";
@@ -371,22 +428,36 @@ void crearFactura()
     cout << "Ingrese el total de pagos y abonos recibidos: ";
     cin >> factura.pagosAbonosRecibidos;
 
-    // Calcular el subtotal de cargos del mes actual
-    factura.subtotalCargosMesActual = factura.saldoPendiente + factura.facturaMes - factura.pagosAbonosRecibidos;
+    // Agregar la nueva factura a la lista de facturas
+    facturas.push_back(factura);
+}
+void mostrar_facturas()
+{
+    if (facturas.empty())
+    {
+        cout << "No hay facturas registradas.\n";
+        return;
+    }
+    cout << "Lista de Facturas:\n";
+    cout << "------------------\n";
+    for (const auto &factura : facturas)
+    {
 
-    // Imprimir la factura
-    cout << "\n----- FACTURA -----\n";
-    cout << "Periodo: " << factura.periodo << endl;
-    cout << "Fecha de Emision: " << factura.fechaEmision << endl;
-    cout << "Fecha de Vencimiento: " << factura.fechaVencimiento << endl;
-    cout << "CLIENTE: " << factura.cliente.nombre << " " << factura.cliente.apellido << endl;
-    cout << "Direccion: " << factura.cliente.direccion << endl;
-    cout << "Telefono: " << factura.cliente.telefono << endl;
-    cout << "(+) Saldo pendiente: " << factura.saldoPendiente << endl;
-    cout << "(+) Factura del Mes: " << factura.facturaMes << endl;
-    cout << "(-) Pagos y Abonos Recibidos: " << factura.pagosAbonosRecibidos << endl;
-    cout << "DETALLE\n";
-    cout << "SUBTOTAL CARGOS MES ACTUAL: " << factura.subtotalCargosMesActual << endl;
+        // Calcular el subtotal de cargos del mes actual
+
+        cout << "Periodo: " << factura.periodo << "\n";
+        cout << "Fecha de Emision: " << factura.fechaEmision << "\n";
+        cout << "Fecha de Vencimiento: " << factura.fechaVencimiento << "\n";
+        cout << "Cliente: " << factura.cliente.nombre << " " << factura.cliente.apellido << "\n";
+        cout << "Direccion: " << factura.cliente.direccion << "\n";
+        cout << "Telefono: " << factura.cliente.telefono << "\n";
+        cout << "Plan de Internet: " << factura.cliente.planInternet << "\n";
+        cout << "(+) Saldo pendiente: " << factura.saldoPendiente << "\n";
+        cout << "(+) Factura del Mes: " << factura.facturaMes << "\n";
+        cout << "(-) Pagos y Abonos Recibidos: " << factura.pagosAbonosRecibidos << "\n";
+        cout << "SUBTOTAL CARGOS MES ACTUAL: " << factura.subtotalCargosMesActual << "\n";
+        cout << "------------------\n";
+    }
 }
 void mostrar_menu()
 {
@@ -396,7 +467,8 @@ void mostrar_menu()
     cout << "3. Buscar Cliente\n";
     cout << "4. Mostrar Clientes\n";
     cout << "5. Crear Factura\n";
-    cout << "6. Salir\n";
+    cout << "6. Mostrar Facturas\n";
+    cout << "7. Salir\n";
     cout << "Seleccione una opcion: ";
 }
 
@@ -411,7 +483,8 @@ void menu_empresa()
         cout << "3. Buscar Cliente\n";
         cout << "4. Mostrar Clientes\n";
         cout << "5. Crear Factura\n";
-        cout << "6. Salir\n";
+        cout << "6. Mostrar Facturas\n";
+        cout << "7. Salir\n";
         cout << "Seleccione una opcion: ";
         cin >> opcion;
 
@@ -447,13 +520,18 @@ void menu_empresa()
             system("cls");
             break;
         case 6:
-            cout << "Saliendo...\n";
+            mostrar_facturas();
+            system("pause");
+            system("cls");
 
+            break;
+        case 7:
+            cout << "Saliendo...\n";
             break;
         default:
             cout << "Opcion no valida. Por favor, intente de nuevo.\n";
         }
-    } while (opcion != 6);
+    } while (opcion != 7);
 }
 
 void menuClientes()
