@@ -176,6 +176,7 @@ string obtenerNombreDepartamento(int numeroDepartamento)
         return "Departamento desconocido";
     }
 }
+
 void mostrar_clientes()
 {
     if (clientes.empty())
