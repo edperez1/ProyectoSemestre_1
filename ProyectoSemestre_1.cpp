@@ -34,10 +34,14 @@ struct Cliente
 };
 struct Factura
 {
-    int numero_factura;
-    string fecha;
-    double total;
+    string periodo;
+    string fechaEmision;
+    string fechaVencimiento;
     Cliente cliente;
+    double saldoPendiente;
+    double facturaMes;
+    double pagosAbonosRecibidos;
+    double subtotalCargosMesActual;
 };
 // Funciones principales.
 vector<Cliente> clientes;
@@ -160,6 +164,8 @@ void agregar_cliente()
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
     }
+    cout << "Que plan desea el ciente? \n";
+
     clientes.push_back(nuevo_cliente);
     cout << "Cliente agregado con exito." << endl;
 }
@@ -205,7 +211,7 @@ void buscar_cliente()
 
         int opcion;
         string busqueda;
-         system("cls");
+        system("cls");
         cout << "Seleccione el criterio de busqueda:\n";
         cout << "1. Por Plan\n"; // esta no esta hecha jejeje
         cout << "2. Por Cedula\n";
@@ -312,16 +318,6 @@ void buscar_cliente()
     } while (seguir == 's' || seguir == 'B');
 }
 
-Factura crear_factura(int numero_factura, const string &fecha, double total, const Cliente &cliente)
-{
-    Factura factura;
-    factura.numero_factura = numero_factura;
-    factura.fecha = fecha;
-    factura.total = total;
-    factura.cliente = cliente;
-    return factura;
-}
-
 // menu principal (1,2,3)
 void MenuOpciones()
 {
@@ -344,7 +340,54 @@ void mostrarInformacionPaquete(const PaqueteInternet &paquete)
     cout << "Descripcion: " << paquete.descripcion << "\n";
     cout << "Precio: $" << paquete.precio << "\n";
 }
+void crearFactura()
+{
+    Factura factura;
 
+    // Solicitar datos de la factura
+    cout << "Ingrese el periodo de la factura: ";
+    cin >> factura.periodo;
+    cout << "Ingrese la fecha de emision (DD/MM/AAAA): ";
+    cin >> factura.fechaEmision;
+    cout << "Ingrese la fecha de vencimiento (DD/MM/AAAA): ";
+    cin >> factura.fechaVencimiento;
+
+    // Solicitar datos del cliente
+    cout << "Ingrese el nombre del cliente: ";
+    cin >> factura.cliente.nombre;
+    cout << "Ingrese el apellido del cliente: ";
+    cin >> factura.cliente.apellido;
+    cout << "Ingrese la direccion del cliente: ";
+    cin.ignore();                            // Ignora el '\n' que queda en el buffer
+    getline(cin, factura.cliente.direccion); // Permite espacios en la dirección
+    cout << "Ingrese el telefono del cliente: ";
+    cin >> factura.cliente.telefono;
+
+    // Solicitar detalles de la factura
+    cout << "Ingrese el saldo pendiente: ";
+    cin >> factura.saldoPendiente;
+    cout << "Ingrese el total de la factura del mes: ";
+    cin >> factura.facturaMes;
+    cout << "Ingrese el total de pagos y abonos recibidos: ";
+    cin >> factura.pagosAbonosRecibidos;
+
+    // Calcular el subtotal de cargos del mes actual
+    factura.subtotalCargosMesActual = factura.saldoPendiente + factura.facturaMes - factura.pagosAbonosRecibidos;
+
+    // Imprimir la factura
+    cout << "\n----- FACTURA -----\n";
+    cout << "Periodo: " << factura.periodo << endl;
+    cout << "Fecha de Emision: " << factura.fechaEmision << endl;
+    cout << "Fecha de Vencimiento: " << factura.fechaVencimiento << endl;
+    cout << "CLIENTE: " << factura.cliente.nombre << " " << factura.cliente.apellido << endl;
+    cout << "Direccion: " << factura.cliente.direccion << endl;
+    cout << "Telefono: " << factura.cliente.telefono << endl;
+    cout << "(+) Saldo pendiente: " << factura.saldoPendiente << endl;
+    cout << "(+) Factura del Mes: " << factura.facturaMes << endl;
+    cout << "(-) Pagos y Abonos Recibidos: " << factura.pagosAbonosRecibidos << endl;
+    cout << "DETALLE\n";
+    cout << "SUBTOTAL CARGOS MES ACTUAL: " << factura.subtotalCargosMesActual << endl;
+}
 void mostrar_menu()
 {
     cout << "\nMenu de empresa\n";
@@ -399,8 +442,9 @@ void menu_empresa()
             system("cls");
             break;
         case 5:
-            // NO HECHO
-            cout << "Crear Factura seleccionado.\n";
+            crearFactura();
+            system("pause");
+            system("cls");
             break;
         case 6:
             cout << "Saliendo...\n";
@@ -409,7 +453,6 @@ void menu_empresa()
         default:
             cout << "Opcion no valida. Por favor, intente de nuevo.\n";
         }
-        // falta un break mas acerca de eliminar clientes q?
     } while (opcion != 6);
 }
 
@@ -477,7 +520,7 @@ void MostrarMenuOpcion()
             cout << "Saliendo del programa..." << endl;
             break;
         default:
-            cout << "Opción inválida. Inténtelo de nuevo." << endl;
+            cout << "Opcion invalida. Inténtelo de nuevo." << endl;
         }
     } while (opcion != '3');
 }
