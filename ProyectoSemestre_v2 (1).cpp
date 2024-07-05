@@ -718,8 +718,8 @@ void menu_empresa()
 }
 // Funcion para el mostrar el menu de clientes
 // Funcion para el mostrar el menu de clientes
-void menuClientes()
-{
+
+void menuClientes() {
     PaqueteInternet paquetes[] = {
         {"5", "Fibra optica hasta la casa.", 17.0},
         {"5", "Fibra optica hasta la casa y CATV.", 22.0},
@@ -729,8 +729,7 @@ void menuClientes()
     int opcion;
 
     cout << "-----Bienvenido al menu Para Clientes-----\n";
-    do
-    {
+    do {
         cout << "Opciones de paquetes de Internet:\n";
         cout << "1. 5 mbps\n";
         cout << "2. 5 mbps + CATV\n";
@@ -740,24 +739,26 @@ void menuClientes()
         cout << "Seleccione una opcion para el paquete de Internet: ";
         
         while (!(cin >> opcion)) {
-            cout << "Por favor, introduzca un numero válido: ";
+            cout << "Por favor, introduzca un numero valido: ";
             cin.clear(); // Limpia el estado de error de cin
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Descarta la entrada hasta el siguiente salto de línea
         }
 
-        if (opcion >= 1 && opcion <= 4)
-        {
+        if (opcion >= 1 && opcion <= 4) {
             cout << "Velocidad: " << paquetes[opcion - 1].velocidad << " mbps\n";
-            cout << "Descripción: " << paquetes[opcion - 1].descripcion << "\n";
+            cout << "Descripcion: " << paquetes[opcion - 1].descripcion << "\n";
             cout << "Precio: $" << paquetes[opcion - 1].precio << "\n";
-        }
-        else if (opcion == 5)
-        {
+            system("pause");
+            system("cls");
+            
+        } else if (opcion == 5) {
+            system("pause");
+            system("cls");
             cout << "Volviendo al Menu...";
             break;
-        }
-        else
-        {
+        } else {
+            system("pause");
+            system("cls"); // Limpia la pantalla antes de mostrar el mensaje de error
             cout << "Opcion no valida.\n";
         }
     } while (opcion != 5);
