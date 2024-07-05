@@ -6,45 +6,45 @@
 #include <algorithm>
 
 /*Este es nuestro Proyecto Final de el Primer semestre de la clase de Logica y Algoritmos */
-
-
-// acordarse
-// agregar filtro
-// agregar "mostrar todos los clientes"
-// agregar crear factura
-// agregar morosos, no morosos
-// agregar validaciones
-
-
-
-
 using namespace std;
-// Definir struct
+// Estructura para almacenar la información de los paquetes de internet
 struct PaqueteInternet
 {
     string velocidad;
     string descripcion;
     double precio;
 };
+// Estructura para almacenar la información de los clientes
+
 struct Cliente
 {
+    int id;
     string nombre;
     string apellido;
     string direccion;
     int telefono;
     string cedula;
-    string Departamento;
-    string plan;
+    int Departamento;
+    int planInternet;
 };
+int ultimoId;
+// Estructura para almacenar la información de las facturas
+
 struct Factura
 {
-    int numero_factura;
-    string fecha;
-    double total;
+    string periodo;
+    string fechaEmision;
+    string fechaVencimiento;
     Cliente cliente;
+    double saldoPendiente;
+    double facturaMes;
+    double pagosAbonosRecibidos;
+    double subtotalCargosMesActual;
 };
-// Funciones principales.
+// Vector global para almacenar los clientes registrados
 vector<Cliente> clientes;
+// Función para eliminar un cliente por ID o nombre
+
 void EliminarCliente()
 {
     int opcion;
@@ -62,99 +62,239 @@ void EliminarCliente()
 
     auto it = clientes.end(); // Inicializa el iterador al final como valor por defecto
 
-switch(opcion) {
+    switch (opcion)
+    {
     case 1: // Nombre o Apellido
-        it = remove_if(clientes.begin(), clientes.end(), [&](const Cliente& cliente) {
-            return cliente.nombre == valorEliminar || cliente.apellido == valorEliminar;
-        });
+        it = remove_if(clientes.begin(), clientes.end(), [&](const Cliente &cliente)
+                       { return cliente.nombre == valorEliminar || cliente.apellido == valorEliminar; });
         clientes.erase(it, clientes.end()); // Completa la eliminación
         break;
     case 2: // Cédula
-        it = remove_if(clientes.begin(), clientes.end(), [&](const Cliente& cliente) {
-            return cliente.cedula == valorEliminar;
-        });
+        it = remove_if(clientes.begin(), clientes.end(), [&](const Cliente &cliente)
+                       { return cliente.cedula == valorEliminar; });
         clientes.erase(it, clientes.end()); // Completa la eliminación
         break;
-case 3: // Número de teléfono
-    int valorEliminarInt;
-    try {
-        valorEliminarInt = std::stoi(valorEliminar);
-    } catch (const std::invalid_argument& e) {
-        cout << "El valor a eliminar no es un número válido.\n";
-        break;
-    } catch (const std::out_of_range& e) {
-        cout << "El valor a eliminar está fuera de rango.\n";
+    case 3: // Número de teléfono
+        int valorEliminarInt;
+        try
+        {
+            valorEliminarInt = std::stoi(valorEliminar);
+        }
+        catch (const std::invalid_argument &e)
+        {
+            cout << "El valor a eliminar no es un número válido.\n";
+            break;
+        }
+        catch (const std::out_of_range &e)
+        {
+            cout << "El valor a eliminar está fuera de rango.\n";
+            break;
+        }
+
+        it = remove_if(clientes.begin(), clientes.end(), [&](const Cliente &cliente)
+                       { return cliente.telefono == valorEliminarInt; });
+        clientes.erase(it, clientes.end()); // Completa la eliminación
         break;
     }
 
-    it = remove_if(clientes.begin(), clientes.end(), [&](const Cliente& cliente) {
-        return cliente.telefono == valorEliminarInt;
-    });
-    clientes.erase(it, clientes.end()); // Completa la eliminación
-    break;
+    // Verificaa si se encontraron elementos para eliminar
+    if (it != clientes.end())
+    {
+        clientes.erase(it, clientes.end());
+        cout << "Cliente(s) eliminado(s) exitosamente.\n";
+    }
+    else
+    {
+        cout << "Cliente no encontrado.\n";
+    }
 }
 
-// Verifica si se encontraron elementos para eliminar
-if (it != clientes.end()) {
-    clientes.erase(it, clientes.end());
-    cout << "Cliente(s) eliminado(s) exitosamente.\n";
-} else {
-    cout << "Cliente no encontrado.\n";
-}
-}
+// Función para agregar un nuevo cliente al sistema
 
 void agregar_cliente()
 {
     Cliente nuevo_cliente;
-    cout << "Ingrese el nombre del cliente: ";
-    getline(cin, nuevo_cliente.nombre);
-    cout << "Ingrese el apellido del cliente: ";
-    getline(cin, nuevo_cliente.apellido);
-    cout << "Ingrese el Departamento del cliente: ";
-    getline(cin, nuevo_cliente.Departamento);
-    cout << "Ingrese la direccion del cliente: ";
-    getline(cin, nuevo_cliente.direccion);
-    cout <<"Ingrese el plan que el cliente desea : ";
-    getline(cin, nuevo_cliente.plan);
-
-    cout << "Ingrese el telefono del cliente: ";
-    while (true)
+    bool esString = true;
+    
+    cin.clear();                                         // Limpia el estado de error de cin
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Descarta la entrada hasta el siguiente salto de línea
+    nuevo_cliente.id = ultimoId++;
+    // Validación del nombre
+    bool nombre_valido = false;
+    while (!nombre_valido)
     {
-        if (cin >> nuevo_cliente.telefono)
+        bool esString = true;
+        cout << "Ingrese el nombre del cliente: ";
+        getline(cin, nuevo_cliente.nombre);
+
+        // Validación de que el nombre solo contiene letras
+        for (char c : nuevo_cliente.nombre)
         {
-            if (to_string(nuevo_cliente.telefono).length() == 8)
+            if (!isalpha(c))
             {
-                break; 
+                esString = false;
+                break;
             }
-            else
-            {
-                cout << "Ingrese un Numero Nacional. ";
-            }
+        }
+
+        if (esString)
+        {
+            cout << "Nombre agregado correctamente.\n";
+            nombre_valido = true;
         }
         else
         {
-            cout << "Ingrese Un Numero  ";
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "El nombre no es válido. Por favor ingrese solo letras.\n";
         }
     }
+    //Validacion de que sea un Apellido
+    bool apellido_valido = false;
+    while (!apellido_valido){
+        bool esString=true;
+     cout << "Ingrese el apellido del Cliente: ";
+    getline(cin, nuevo_cliente.apellido);
+
+    // Validación de que el apellido solo contiene letras
+    for(char c : nuevo_cliente.apellido)
+    {
+        if (!isalpha(c))
+        {
+            esString = false;
+            break;
+        }
+    }
+
+    if (esString)
+    {
+        cout << "Apellido agregado correctamente.\n";
+        apellido_valido=true;
+        break;
+    }
+    else
+    {
+        cout << "El apellido no es válido. Por favor ingrese solo letras.\n";
+        
+    }
+    }
+    cout << "Seleccione el departamento:\n";
+    string departamentos[] = {"Atlantico Norte", "Atlantico Sur", "Boaco", "Carazo", "Chinandega", "Chontales", "Esteli", "Granada", "Jinotega", "Leon", "Madriz", "Managua", "Masaya", "Matagalpa", "Nueva Segovia", "Rio San Juan", "Rivas"};
+    for (int i = 0; i < 17; ++i)
+    {
+        cout << i + 1 << ". " << departamentos[i] << "\n";
+    }
+    int departamentoSeleccionado = 0;
+    do
+    {
+        cout << "Ingrese el numero del departamento (1-17): ";
+        cin >> departamentoSeleccionado;
+        if (cin.fail() || departamentoSeleccionado < 1 || departamentoSeleccionado > 17)
+        {
+            cout << "Opcion no valida. Por favor, intente de nuevo.\n";
+            cin.clear();                                         // Limpia el estado de error de cin
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Descarta la entrada hasta el siguiente salto de línea
+        }
+        else
+        {
+            break; // Salir del bucle si la opción es válida
+        }
+    } while (true);
+    nuevo_cliente.Departamento = departamentoSeleccionado;
+
+    cin.ignore(); // Prepara para la siguiente entrada de texto
+
+    cout << "Ingrese la direccion del cliente: ";
+    getline(cin, nuevo_cliente.direccion);
+
+
+   cout << "Ingrese el telefono del cliente: ";
+string telefonoStr;
+do
+{
+    getline(cin, telefonoStr); // Usa getline para leer la línea completa, incluidos los espacios
+    bool esNumeroValido = true;
+    // Verifica si la cadena tiene exactamente 8 dígitos
+    if (telefonoStr.length() == 8)
+    {
+        for (char c : telefonoStr)
+        {
+            if (!isdigit(c)) // Verifica si cada carácter no es un dígito
+            {
+                esNumeroValido = false;
+                break;
+            }
+        }
+    }
+    else
+    {
+        esNumeroValido = false;
+    }
+
+    if (!esNumeroValido)
+    {
+        cout << "El numero de telefono debe de constar de 8 digitos segun el numero nacional. Por favor, intente de nuevo: ";
+    }
+    else
+    {
+        nuevo_cliente.telefono = stoi(telefonoStr); // Convierte la cadena a entero
+        break; // Sale del bucle si el número es válido
+    }
+} while (true);
 
     cout << "Introduzca la cedula de el cliente: ";
     while (true)
     {
         cin >> nuevo_cliente.cedula;
-        if (nuevo_cliente.cedula.length() == 14)
+        if (nuevo_cliente.cedula.length() == 16)
         {
             break;
         }
         else
         {
-            cout << "Intente de nuevo ";
+            cout << "Intente de nuevo (Formato 000-000000-0000n)";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
     }
+    int opcion_paquete;
+    do
+    {
+        cout << "Opciones de paquetes de Internet:\n";
+        cout << "1. 5 mbps\n";
+        cout << "2. 5 mbps + CATV\n";
+        cout << "3. 10 mbps + CATV\n";
+        cout << "4. 20 mbps + CATV\n";
+        cout << "Seleccione una opcion para el paquete de Internet (1-4): ";
+        cin >> opcion_paquete;
+
+        if (!cin.fail() && opcion_paquete >= 1 && opcion_paquete <= 4)
+        {
+            nuevo_cliente.planInternet = opcion_paquete;
+            cout << "Paquete seleccionado: " << opcion_paquete << "\n";
+            break; // Salir del bucle si la opción es válida
+        }
+        else
+        {
+            cout << "Opcion no valida. Por favor, intente de nuevo.\n";
+            cin.clear();                                         // Limpia el estado de error de cin
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Descarta la entrada hasta el siguiente salto de línea
+        }
+    } while (true);
     clientes.push_back(nuevo_cliente);
-    cout << "Cliente agregado con exito." << endl;
+    cout << "Cliente agregado con exito. ID: " << nuevo_cliente.id << endl;
 }
+// Función para obtener el nombre del departamento basado en un número
+string obtenerNombreDepartamento(int numeroDepartamento)
+{
+    string departamentos[] = {"Atlantico Norte", "Atlantico Sur", "Boaco", "Carazo", "Chinandega", "Chontales", "Esteli", "Granada", "Jinotega", "Leon", "Madriz", "Managua", "Masaya", "Matagalpa", "Nueva Segovia", "Rio San Juan", "Rivas"};
+    if (numeroDepartamento > 0 && numeroDepartamento <= 17)
+    {
+        return departamentos[numeroDepartamento - 1];
+    }
+    else
+    {
+        return "Departamento desconocido";
+    }
+}
+// Función para mostrar todos los clientes registrados
 
 void mostrar_clientes()
 {
@@ -167,10 +307,30 @@ void mostrar_clientes()
     cout << "------------------\n";
     for (const auto &cliente : clientes)
     {
-        cout << "Nombre: " << cliente.nombre << "\nApellido: " << cliente.apellido << "\nDepartamento: " << cliente.Departamento << "\nDireccion: " << cliente.direccion << "\nTelefono: " << cliente.telefono << "\nCedula: " << cliente.cedula << "\n";
+        cout << "Nombre: " << cliente.nombre << "\nApellido: " << cliente.apellido << "\nDepartamento: " << obtenerNombreDepartamento(cliente.Departamento) << "\nDireccion: " << cliente.direccion << "\nTelefono: " << cliente.telefono << "\nCedula: " << cliente.cedula << "\nID: " << cliente.id << "\nPlan de Internet: ";
+        switch (cliente.planInternet)
+        {
+        case 1:
+            cout << "5 mbps";
+            break;
+        case 2:
+            cout << "5 mbps + CATV";
+            break;
+        case 3:
+            cout << "10 mbps + CATV";
+            break;
+        case 4:
+            cout << "20 mbps + CATV";
+            break;
+        default:
+            cout << "Plan no definido";
+        }
+        cout << "\n";
         cout << "------------------\n";
     }
 }
+// Función para buscar un cliente por ID o nombre
+
 void buscar_cliente()
 {
     char seguir = 's';
@@ -184,16 +344,17 @@ void buscar_cliente()
 
         int opcion;
         string busqueda;
+        system("cls");
         cout << "Seleccione el criterio de busqueda:\n";
-        cout << "1. Por Plan\n"; // esta no esta hecha jejeje
-        cout << "2. Por Cedula\n";
-        cout << "3. Por Nombre\n";
-        cout << "4. Por Numero\n";
+        cout << "1. Por Cedula\n";
+        cout << "2. Por Nombre\n";
+        cout << "3. Por Numero\n";
+        cout << "4. Por Departamento\n";
         cout << "Ingrese una opcion: ";
 
         while (!(cin >> opcion) || opcion < 1 || opcion > 4)
         {
-            cout << "Opcion invalida. Por favor, ingrese un numero entre 1 y 4: ";
+            cout << "Opcion invalida. Por favor, ingrese un numero entre 1 y 5: ";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
         cin.ignore();
@@ -201,11 +362,8 @@ void buscar_cliente()
         bool encontrado = false;
         switch (opcion)
         {
+
         case 1:
-            cout << "funcionalidad no implementada aun.\n";
-            //no he hecho esta atento ( es q ta muy complicada pq hace falta añadir que plan quiere el cliente o el manejo de archivos)
-            break;
-        case 2:
             cout << "Ingrese la cedula del cliente: ";
             getline(cin, busqueda);
             for (const auto &cliente : clientes)
@@ -215,13 +373,13 @@ void buscar_cliente()
                     cout << "Cliente encontrado:\n";
                     cout << "Nombre: " << cliente.nombre << "\nApellido: " << cliente.apellido << "\nDepartamento: " << cliente.Departamento << "\nDireccion: " << cliente.direccion << "\nTelefono: " << cliente.telefono << "\nCedula: " << cliente.cedula << "\n\n";
                     encontrado = true;
-                    break;
+                    // break; // Elimina esta línea
                 }
             }
             if (!encontrado)
                 cout << "Cliente no encontrado.\n";
             break;
-        case 3:
+        case 2:
             cout << "Ingrese el nombre del cliente: ";
             getline(cin, busqueda);
             for (const auto &cliente : clientes)
@@ -231,13 +389,13 @@ void buscar_cliente()
                     cout << "Cliente encontrado:\n";
                     cout << "Nombre: " << cliente.nombre << "\nApellido: " << cliente.apellido << "\nDepartamento: " << cliente.Departamento << "\nDireccion: " << cliente.direccion << "\nTelefono: " << cliente.telefono << "\nCedula: " << cliente.cedula << "\n\n";
                     encontrado = true;
-                    break;
+                    // break; // Elimina esta línea
                 }
             }
             if (!encontrado)
                 cout << "Cliente no encontrado.\n";
             break;
-        case 4:
+        case 3:
             cout << "Ingrese el numero del cliente: ";
             int numero;
             while (!(cin >> numero))
@@ -252,7 +410,29 @@ void buscar_cliente()
                     cout << "Cliente encontrado:\n";
                     cout << "Nombre: " << cliente.nombre << "\nApellido: " << cliente.apellido << "\nDepartamento: " << cliente.Departamento << "\nDireccion: " << cliente.direccion << "\nTelefono: " << cliente.telefono << "\nCedula: " << cliente.cedula << "\n\n";
                     encontrado = true;
-                    break;
+                    // break; // Elimina esta línea
+                }
+            }
+            if (!encontrado)
+                cout << "Cliente no encontrado.\n";
+            break;
+
+        case 4: // Caso para búsqueda por Departamento
+            int numDepartamento;
+            cout << "Ingrese el numero del departamento: ";
+            while (!(cin >> numDepartamento))
+            {
+                cout << "Por favor, ingrese un numero valido para el departamento: ";
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+            for (const auto &cliente : clientes)
+            {
+                if (cliente.Departamento == numDepartamento)
+                {
+                    cout << "Cliente encontrado:\n";
+                    cout << "Nombre: " << cliente.nombre << "\nApellido: " << cliente.apellido << "\nDepartamento: " << obtenerNombreDepartamento(cliente.Departamento) << "\nDireccion: " << cliente.direccion << "\nTelefono: " << cliente.telefono << "\nCedula: " << cliente.cedula << "\n\n";
+                    encontrado = true;
+                    // No se detiene después de encontrar el primer cliente
                 }
             }
             if (!encontrado)
@@ -263,32 +443,20 @@ void buscar_cliente()
         cout << "Desea buscar otro cliente o volver al menu principal? (s para buscar de nuevo/n para volver): ";
         cin >> seguir;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        system("pause");
-        system("cls");
 
     } while (seguir == 's' || seguir == 'B');
 }
 
-Factura crear_factura(int numero_factura, const string &fecha, double total, const Cliente &cliente)
-{
-    Factura factura;
-    factura.numero_factura = numero_factura;
-    factura.fecha = fecha;
-    factura.total = total;
-    factura.cliente = cliente;
-    return factura;
-}
-
-//menu principal (1,2,3)
+// Función para mostrar el menú principal y manejar las opciones seleccionadas
 void MenuOpciones()
 {
-    cout << "                   -----Menu Principal-----" << endl;
+    cout<<"                   >>--------------------------<<"<<endl;
+    cout<<"                   ||      Menu Principal      ||"<<endl ;
+    cout<<"                   >>--------------------------<<"<<endl;
     cout << "\n1. Menu de Empresa" << "\n2. Menu para Clientes" << "\n3. Salir del Programa" << endl;
     cout << "Seleccione una opcion: ";
-
-
 }
-
+// Mostrar paquetes de interent
 void mostrarPrecios()
 {
     cout << "Opciones de paquetes de Internet:\n";
@@ -303,19 +471,104 @@ void mostrarInformacionPaquete(const PaqueteInternet &paquete)
     cout << "Descripcion: " << paquete.descripcion << "\n";
     cout << "Precio: $" << paquete.precio << "\n";
 }
+// Vector donde se guardan las facturas
+vector<Factura> facturas;
+// Función para crear una nueva factura
+void crearFactura()
+{
+    int idCliente;
+    bool clienteEncontrado = false;
+    Cliente clienteFactura;
 
+    // Solicitar ID del cliente
+    cout << "Ingrese el ID del cliente para la factura: ";
+    cin >> idCliente;
+
+    // Buscar el cliente por ID
+    for (const auto &cliente : clientes)
+    {
+        if (cliente.id == idCliente)
+        {
+            clienteFactura = cliente; // Asignar el cliente encontrado a una variable temporal
+            clienteEncontrado = true;
+            break;
+        }
+    }
+
+    if (!clienteEncontrado)
+    {
+        cout << "Cliente no encontrado." << endl;
+        return; // Salir de la función si no se encuentra el cliente
+    }
+
+    // Crear una nueva factura y asignar el cliente encontrado
+    Factura factura;
+    factura.cliente = clienteFactura;
+
+    // Solicitar el resto de datos de la factura
+    cout << "Ingrese el periodo de la factura: ";
+    getline(cin,factura.periodo);
+    cout << "Ingrese la fecha de emision (DD/MM/AAAA): ";
+    getline(cin,factura.fechaEmision);
+    cout << "Ingrese la fecha de vencimiento (DD/MM/AAAA): ";
+    getline(cin,factura.fechaVencimiento);
+    cout << "Ingrese el saldo pendiente: ";
+    cin >> factura.saldoPendiente;
+    cout << "Ingrese el total de la factura del mes: ";
+    cin >> factura.facturaMes;
+    cout << "Ingrese el total de pagos y abonos recibidos: ";
+    cin >> factura.pagosAbonosRecibidos;
+
+    // Calcular el subtotal de cargos del mes actual (formula)
+    factura.subtotalCargosMesActual = factura.saldoPendiente + factura.facturaMes - factura.pagosAbonosRecibidos;
+
+    // Agregar la nueva factura a la lista de facturas
+    facturas.push_back(factura);
+}
+// Función para mostrar las facturas registradas
+
+void mostrar_facturas()
+{
+    if (facturas.empty())
+    {
+        cout << "No hay facturas registradas.\n";
+        return;
+    }
+    cout << "Lista de Facturas:\n";
+    cout << "------------------\n";
+    for (const auto &factura : facturas)
+    {
+
+        // Calcular el subtotal de cargos del mes actual
+
+        cout << "Periodo: " << factura.periodo << "\n";
+        cout << "Fecha de Emision: " << factura.fechaEmision << "\n";
+        cout << "Fecha de Vencimiento: " << factura.fechaVencimiento << "\n";
+        cout << "Cliente: " << factura.cliente.nombre << " " << factura.cliente.apellido << "\n";
+        cout << "Direccion: " << factura.cliente.direccion << "\n";
+        cout << "Telefono: " << factura.cliente.telefono << "\n";
+        cout << "Plan de Internet: " << factura.cliente.planInternet << "\n";
+        cout << "(+) Saldo pendiente: " << factura.saldoPendiente << "\n";
+        cout << "(+) Factura del Mes: " << factura.facturaMes << "\n";
+        cout << "(-) Pagos y Abonos Recibidos: " << factura.pagosAbonosRecibidos << "\n";
+        cout << "SUBTOTAL CARGOS MES ACTUAL: " << factura.subtotalCargosMesActual << "\n";
+        cout << "------------------\n";
+    }
+}
+// Funcion para base de menu_empresa
 void mostrar_menu()
 {
-     cout << "\nMenu de empresa\n";
-        cout << "1. Agregar Cliente\n";
-        cout << "2. Eliminar Cliente\n";
-        cout << "3. Buscar Cliente\n";
-        cout << "4. Mostrar Clientes\n";
-        cout << "5. Crear Factura\n";
-        cout << "6. Salir\n";
-        cout << "Seleccione una opcion: ";
+    cout << "\nMenu de empresa\n";
+    cout << "1. Agregar Cliente\n";
+    cout << "2. Eliminar Cliente\n";
+    cout << "3. Buscar Cliente\n";
+    cout << "4. Mostrar Clientes\n";
+    cout << "5. Crear Factura\n";
+    cout << "6. Mostrar Facturas\n";
+    cout << "7. Salir\n";
+    cout << "Seleccione una opcion: ";
 }
-
+// Funcion donde se muestra el menu de empresa
 void menu_empresa()
 {
     int opcion = 0;
@@ -327,12 +580,16 @@ void menu_empresa()
         cout << "3. Buscar Cliente\n";
         cout << "4. Mostrar Clientes\n";
         cout << "5. Crear Factura\n";
-        cout << "6. Salir\n";
+        cout << "6. Mostrar Facturas\n";
+        cout << "7. Salir\n";
         cout << "Seleccione una opcion: ";
-        cin >> opcion;
 
-        // esta onda de cin ignore esta en mucha parte del codigo, sirve para limpiar el buffer
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        while (!(cin >> opcion) || opcion < 1 || opcion > 7)
+        {
+            cout << "Opcion no valida. Por favor, intente de nuevo con un numero entre 1 y 7: ";
+            cin.clear();                                         // Limpia el estado de error de cin
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Descarta la entrada hasta el siguiente salto de línea
+        }
 
         switch (opcion)
         {
@@ -340,17 +597,14 @@ void menu_empresa()
             agregar_cliente();
             system("pause");
             system("cls");
-
             break;
         case 2:
             EliminarCliente();
-            cout << "Eliminar Cliente seleccionado.\n";
             system("pause");
             system("cls");
             break;
         case 3:
             buscar_cliente();
-            cout << "Buscar Cliente seleccionado.\n";
             system("pause");
             system("cls");
             break;
@@ -360,20 +614,24 @@ void menu_empresa()
             system("cls");
             break;
         case 5:
-            // NO HECHO
-            cout << "Crear Factura seleccionado.\n";
+            crearFactura();
+            system("pause");
+            system("cls");
             break;
         case 6:
+            mostrar_facturas();
+            system("pause");
+            system("cls");
+            break;
+        case 7:
             cout << "Saliendo...\n";
-            
             break;
         default:
-            cout << "Opcion no valida. Por favor, intente de nuevo.\n";
+            break;
         }
-        //falta un break mas acerca de eliminar clientes
-    } while (opcion != 6);
+    } while (opcion != 7);
 }
-
+// Funcion para el mostrar el menu de clientes
 void menuClientes()
 {
     PaqueteInternet paquetes[] = {
@@ -413,7 +671,7 @@ void menuClientes()
         }
     } while (opcion != 5);
 }
-
+// Funcion para seleccionar las anteriores funciones
 void MostrarMenuOpcion()
 {
     char opcion;
@@ -438,10 +696,12 @@ void MostrarMenuOpcion()
             cout << "Saliendo del programa..." << endl;
             break;
         default:
-            cout << "Opción inválida. Inténtelo de nuevo." << endl;
+            cout << "Opcion invalida. Inténtelo de nuevo." << endl;
         }
     } while (opcion != '3');
 }
+
+// Función principal del programa
 int main()
 {
 
