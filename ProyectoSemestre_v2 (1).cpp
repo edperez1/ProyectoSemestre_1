@@ -58,6 +58,20 @@ struct Factura
 vector<Cliente> clientes;
 // Función para eliminar un cliente por ID o nombre
 
+void inicializarDatos() {
+    // Agregar clientes predefinidos
+    clientes.push_back({0, "Arai", "Guv", "San Ramon", 71326485 , "161-070401-1050V", 1, 1});
+    clientes.push_back({1, "Carla", "Molina", "La Reyna", 87654321, "489-030598-1012F", 2, 2});
+//Como se agrega clientes predefinidos, hay que agregar un inicializador
+        int maxId = 0;
+    for (const Cliente& cliente : clientes) {
+        if (cliente.id > maxId) {
+            maxId = cliente.id;
+        }
+    }
+    ultimoId = maxId + 1;
+};
+
 void EliminarCliente()
 {
     int opcion;
@@ -503,6 +517,24 @@ void mostrarInformacionPaquete(const PaqueteInternet &paquete)
 // Vector donde se guardan las facturas
 vector<Factura> facturas;
 // Función para crear una nueva factura
+
+// Función para sumar un mes a una fecha dada
+string sumarUnMes(const string& fechaEmision) {
+    int dia, mes, anio;
+    sscanf(fechaEmision.c_str(), "%d/%d/%d", &dia, &mes, &anio);
+
+    mes += 1; // Incrementa el mes
+    if (mes > 12) { // Si el mes es mayor que diciembre, incrementa el año y reinicia el mes a enero
+        mes = 1;
+        anio += 1;
+    }
+
+    char fechaVencimiento[11];
+    sprintf(fechaVencimiento, "%02d/%02d/%04d", dia, mes, anio);
+    return string(fechaVencimiento);
+}
+
+
 void crearFactura()
 {
     cout << "Ingrese el ID del cliente: ";
@@ -559,14 +591,8 @@ void crearFactura()
     }
     factura.fechaEmision = fechaEmision;
 
-    cout << "Ingrese la fecha de vencimiento (DD/MM/AAAA): ";
-    string fechaVencimiento;
-    cin >> fechaVencimiento;
-    if (!regex_match(fechaVencimiento, fechaRegex)) {
-        cout << "Formato de fecha no válido.\n";
-        return; // O manejar el error de manera adecuada
-    }
-    factura.fechaVencimiento = fechaVencimiento;
+    factura.fechaVencimiento = sumarUnMes(fechaEmision);
+    cout << "Fecha de vencimiento: " << factura.fechaVencimiento << endl;
 
     cout << "Ingrese el saldo pendiente: ";
     double saldoPendiente;
@@ -635,7 +661,7 @@ void mostrar_facturas()
         cout << "(+) Saldo pendiente: " << factura.saldoPendiente << "\n";
         cout << "(+) Factura del Mes: " << factura.facturaMes << "\n";
         cout << "(-) Pagos y Abonos Recibidos: " << factura.pagosAbonosRecibidos << "\n";
-        cout << "SUBTOTAL CARGOS MES ACTUAL: " << factura.subtotalCargosMesActual << "\n";
+        cout << "TOTAL CARGOS MES ACTUAL: " << factura.subtotalCargosMesActual << "\n";
         cout << "------------------\n";
     }
 }
@@ -796,7 +822,7 @@ void MostrarMenuOpcion()
 // Función principal del programa
 int main()
 {
-
+    inicializarDatos();
     MostrarMenuOpcion();
 
     return 0;
